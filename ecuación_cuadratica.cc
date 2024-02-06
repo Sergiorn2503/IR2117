@@ -22,6 +22,11 @@ int main() {
 
         if(disc < 0){
 		std::cout << "No existen soluciones reales";
+
+        }else if(disc == 0){
+		int sol1 = -b/2*a;
+		std::cout << "Existe una solución: " << sol1;
+        
         }else{
             int raiz = std::sqrt(disc);
             int sol1 = -b+raiz/2*a;
