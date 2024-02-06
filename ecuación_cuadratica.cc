@@ -20,11 +20,13 @@ int main() {
         
         int disc = discriminante(a,b,c);
 
-		if(disc >= 0){
+        if(disc < 0){
+		std::cout << "No existen soluciones reales";
+        }else{
             int raiz = std::sqrt(disc);
-		int sol1 = -b+raiz/2*a;
-		int sol2 = -b-raiz/2*a;
-		std::cout << "Existen dos soluciones:" << sol1 << sol2;
+            int sol1 = -b+raiz/2*a;
+            int sol2 = -b-raiz/2*a;
+            std::cout << "Existen dos soluciones:" << sol1 << sol2;
         }
 	
 	return 0;
