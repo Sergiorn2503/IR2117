@@ -1,5 +1,6 @@
 // Saca primorial de un n
 #include <iostream>
+#include "misfunciones.hpp"
 
 
 bool EsPrimo(int n) {
@@ -15,6 +16,15 @@ bool EsPrimo(int n) {
     }
 }
 
+int primorial(int n) {
+    int prim = 1;
+    for(int i = 1; i <= n; i++) {
+        if(EsPrimo(i) == true) {
+             prim *= i;
+        }
+    }
+    return prim;
+}
 
 int main() {
     int n;
@@ -23,11 +33,9 @@ int main() {
     std::cout << "";
     std::cin >> n;
     
-    if(EsPrimo(n)){
-        std::cout << n << "Es primo";
-    }else{
-        std::cout << n << "No Es primo";
-    }
+    prim = primorial(n);
+
+    std::cout << n << "# = " << prim << std::endl;
 
     return 0;
 }
