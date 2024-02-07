@@ -14,7 +14,7 @@ int main() {
         int c;
         std::cout << "Introduce un coeficiente de x²";
         std::cin >> a;
-		std::cout << "Introduce un coeficiente de x¹";
+	std::cout << "Introduce un coeficiente de x¹";
         std::cin >> b;
         std::cout << "Introduce un coeficiente de x⁰";
         std::cin >> c;
@@ -23,8 +23,8 @@ int main() {
 
         if(disc < 0){
 		std::complex<float> raiz1(-b / (2*a), std::sqrt(-disc) / (2*a));
-        std::complex<float> raiz2(-b / (2*a), -std::sqrt(-disc) / (2*a));
-        std::cout << "Las soluciones complejas son: " << raiz1 << "y" << raiz2;
+        	std::complex<float> raiz2(-b / (2*a), -std::sqrt(-disc) / (2*a));
+        	std::cout << "Las soluciones complejas son: " << raiz1 << "y" << raiz2;
 
         }else if(disc == 0){
 		int sol1 = -b/2*a;
