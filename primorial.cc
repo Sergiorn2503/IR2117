@@ -17,7 +17,7 @@ bool EsPrimo(int n) {
 }
 
 int primorial(int n) {
-    int prim = 1;
+    unsigned long long int prim = 1;
     for(int i = 1; i <= n; i++) {
         if(EsPrimo(i) == true) {
              prim *= i;
@@ -28,7 +28,7 @@ int primorial(int n) {
 
 int main() {
     int n;
-    int prim = 1;
+    unsigned long long int prim; = 1;
     
     std::cout << "";
     std::cin >> n;
