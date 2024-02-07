@@ -23,10 +23,9 @@ int main() {
     std::cout << "";
     std::cin >> n;
     
-    if(EsPrimo(n)){
-        std::cout << n << "Es primo";
-    }else{
-        std::cout << n << "No Es primo";
+    if(n == 0 || n == 1){
+        int prim = 1;
+        std::cout << n << "# = " << prim << std::endl;
     }
 
     return 0;
