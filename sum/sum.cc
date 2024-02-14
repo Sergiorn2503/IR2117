@@ -5,6 +5,7 @@ int Suma(int num) {
 	for(int i = 1; i <= num; i++){
 		sum += i;
 	}
+	return sum;
 }
 
 int main() {
@@ -12,15 +13,14 @@ int main() {
 	std::cout << "Mete un número";
 	std::cin >> num;
 	
+	
+	while(num < 1){
+			std::cout << "Mete un número";
+			std::cin >> num;
+		}
+
 	int suma = Suma(num);
-	
-	while(num >= 1){
-		std::cout << "La suma desde 1 de " << num << "es" << suma << 		std::endl;
-		std::cout << "Mete un número";
-		std::cin >> num;
-		suma = Suma(num);
-	}
-	
-	std::cout << "Número no válido";
+	std::cout << "La suma desde 1 de " << num << "es" << suma << std::endl;
+
 	return 0;
 }
