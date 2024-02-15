@@ -20,11 +20,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-add_executable(sum src/sum.cpp)
-ament_target_dependencies(sum rclcpp std_msgs)
+add_executable(mean src/mean.cpp)
+ament_target_dependencies(mean rclcpp std_msgs)
 
 install(TARGETS
-    sum
+    mean
     DESTINATION lib/${PROJECT_NAME}
 )
 
