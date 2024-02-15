@@ -1,24 +1,19 @@
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/int32.hpp"
+#include "std_msgs/msg/string.hpp"
 #include <iostream>
-#include <chrono>
 
-int sum;
-std::shared_ptr< rclcpp::Publisher<std_msgs::msg::Int32> > publisher;
-
-void topic_callback(const std_msgs::msg::Int32::SharedPtr msg){
-    sum += msg->data;
-    std_msgs::msg::Int32 out_msg;
-    out_msg.data = sum;
-    publisher->publish(out_msg);
+void topic_callback(const std_msgs::msg::String::SharedPtr msg)
+{
+    std::cout << msg->data << std::endl;
 }
 
-int main(int argc, char * argv[]){
-    sum = 0;
+int main(int argc, char * argv[])
+{
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("sum");
-    auto subscription = node->create_subscription<std_msgs::msg::Int32>("number", 10, topic_callback);
-    publisher = node->create_publisher<std_msgs::msg::Int32>("sum", 10);
+    auto node = rclcpp::Node::make_shared("susbcriber");
+    auto subscription = 
+    	node->create_subscription<std_msgs::msg::String>("topic", 10, topic_callback);
+    
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
