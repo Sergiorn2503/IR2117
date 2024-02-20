@@ -21,8 +21,9 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
 add_executable(mean src/mean.cpp)
-add_executable(median src/mean.cpp)
 ament_target_dependencies(mean rclcpp std_msgs)
+
+add_executable(median src/mean.cpp)
 ament_target_dependencies(median rclcpp std_msgs)
 
 install(TARGETS
