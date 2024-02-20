@@ -20,7 +20,7 @@ int main(int argc, char * argv[])
 {
     sum = 0;
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("sum");
+    auto node = rclcpp::Node::make_shared("mean");
     auto subscription = 
     	node->create_subscription<std_msgs::msg::Int32>("number", 10, topic_callback);
     
