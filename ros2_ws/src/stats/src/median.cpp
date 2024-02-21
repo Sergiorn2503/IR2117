@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 
 std::shared_ptr< rclcpp::Publisher<std_msgs::msg::Int32> > publisher;
 std::vector<int> vect = {};
@@ -12,12 +13,15 @@ void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
     vect.push_back(msg -> data);
     talla = vect.size();
-    
     std_msgs::msg::Int32 out_msg;
-    out_msg.data = msg->data;
-    //publisher -> publish(out_msg);
-    
     std::sort(vect.begin(), vect.end());
+    
+    int sum = std::accumulate(vect.begin(), vect.end(), 0);
+    double mean = sum / talla;
+    
+    out_msg.data = mean;
+    publisher -> publish(out_msg);
+    
     for(int i = 0; i < talla; i++){
     	std::cout << vect[i] << ",";
     }
