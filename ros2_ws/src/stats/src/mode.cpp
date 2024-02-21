@@ -1,33 +1,39 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/int32.hpp"
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <map>
 
-int sum;
-int mensajes = 1;
-int mean;
 
 std::shared_ptr< rclcpp::Publisher<std_msgs::msg::Int32> > publisher;
+std::vector<int> vect = {};
+std::map<int, int> map;
 
 void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
-    sum += msg->data;
-    mean = sum / mensajes;
+    vect.push_back(msg -> data);
+    map[msg -> data]++;
     
-    std_msgs::msg::Int32 out_msg;
-    out_msg.data = mean;
-    publisher -> publish(out_msg);
-    mensajes += 1;
+    //std_msgs::msg::Int32 out_msg;
+    //out_msg.data = mean;
+    //publisher -> publish(out_msg);
+    
+    for(auto &pair : map) {
+        std::cout << "Número: " << pair.first << ", Ocurrencias: " << pair.second << std::endl;
+    }
+    
+    std::cout << std::endl;    
 }
 
 int main(int argc, char * argv[])
 {
-    sum = 0;
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("mean");
+    auto node = rclcpp::Node::make_shared("median");
     auto subscription = 
     	node->create_subscription<std_msgs::msg::Int32>("number", 10, topic_callback);
-    
-    publisher = node->create_publisher<std_msgs::msg::Int32>("mean", 10);
+    publisher = node->create_publisher<std_msgs::msg::Int32>("median", 10);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
