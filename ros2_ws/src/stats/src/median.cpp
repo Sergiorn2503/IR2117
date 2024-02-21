@@ -2,24 +2,30 @@
 #include "std_msgs/msg/int32.hpp"
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 std::shared_ptr< rclcpp::Publisher<std_msgs::msg::Int32> > publisher;
+std::vector<int> vect = {};
+int talla;
 
 void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
     vect.push_back(msg -> data);
+    talla = vect.size();
+    
     std_msgs::msg::Int32 out_msg;
     out_msg.data = msg->data;
     //publisher -> publish(out_msg);
     
-    for(int i = 0; i < vect.size(); i++){
-    	std::cout << vect[i] << std::endl;
+    std::sort(vect.begin(), vect.end());
+    for(int i = 0; i < talla; i++){
+    	std::cout << vect[i] << ",";
     }
+    std::cout << std::endl;
 }
 
 int main(int argc, char * argv[])
 {
-    std::vector<int> vect = {};
     rclcpp::init(argc, argv);
     auto node = rclcpp::Node::make_shared("median");
     auto subscription = 
