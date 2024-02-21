@@ -16,24 +16,28 @@ void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
     vect.push_back(msg -> data);
     map[msg -> data]++;
     
-    //std_msgs::msg::Int32 out_msg;
-    //out_msg.data = mean;
-    //publisher -> publish(out_msg);
+    std_msgs::msg::Int32 out_msg;
+    int mode;
+    int max = 0;
     
     for(auto &pair : map) {
-        std::cout << "Número: " << pair.first << ", Ocurrencias: " << pair.second << std::endl;
+        if(max < pair.second){
+        	mode = pair.first;
+        	max = pair.second;
+        }
     }
     
-    std::cout << std::endl;    
+    out_msg.data = mode;
+    publisher -> publish(out_msg);    
 }
 
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("median");
+    auto node = rclcpp::Node::make_shared("mode");
     auto subscription = 
     	node->create_subscription<std_msgs::msg::Int32>("number", 10, topic_callback);
-    publisher = node->create_publisher<std_msgs::msg::Int32>("median", 10);
+    publisher = node->create_publisher<std_msgs::msg::Int32>("mode", 10);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
