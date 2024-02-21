@@ -3,7 +3,7 @@
 #include <iostream>
 
 int sum;
-int mensajes = 0;
+int mensajes = 1;
 int mean;
 
 std::shared_ptr< rclcpp::Publisher<std_msgs::msg::Int32> > publisher;
@@ -12,7 +12,8 @@ void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
     sum += msg->data;
     std_msgs::msg::Int32 out_msg;
-    out_msg.data = sum;
+    mean = sum / mensajes;
+    out_msg.data = mean;
     publisher -> publish(out_msg);
     mensajes += 1;
 }
@@ -28,8 +29,5 @@ int main(int argc, char * argv[])
     publisher = node->create_publisher<std_msgs::msg::Int32>("mean", 10);
     rclcpp::spin(node);
     rclcpp::shutdown();
-    mean = sum / mensajes;
-    std::cout << mensajes << std::endl;
-    std::cout << mean << std::endl;
     return 0;
 }
