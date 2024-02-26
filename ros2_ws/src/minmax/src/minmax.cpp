@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
     auto node = rclcpp::Node::make_shared("minmax");
     auto subscription = 
     	node->create_subscription<std_msgs::msg::Int32>("number", 10, topic_callback);
-    publisher = node->create_publisher<std_msgs::msg::Int32MultiArray>("minmax", 10);
+    publisher = node->create_publisher<std_msgs::msg::Int32MultiArray>("minmax", 10); //no es int32 lo publicado
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
