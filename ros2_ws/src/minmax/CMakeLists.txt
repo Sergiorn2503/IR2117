@@ -17,6 +17,17 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+
+add_executable(min src/min.cpp)
+ament_target_dependencies(min rclcpp std_msgs)
+
+install(TARGETS
+    min
+    DESTINATION lib/${PROJECT_NAME}
+)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
