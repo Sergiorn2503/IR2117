@@ -7,7 +7,11 @@ int min = 0;
 
 void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
-    min = msg->data; 
+    if(min < msg->data){
+    	min = msg->data;
+    }
+    //vamos guardando el mínimo
+    
     std::cout << "mínimo" << min << std::endl;
      //Nopublicamos simplemente almacenamos y cout
 int main(int argc, char * argv[])
