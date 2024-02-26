@@ -10,9 +10,9 @@ void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
     if(max > msg->data){
     	max = msg->data;
     }
-    
+    //Igual que min pero cambiando el if
     std_msgs::msg::Int32 out_msg;
-    out_msg.data = max;
+    out_msg.data = max;  //Publicamos
     publisher -> publish(out_msg);
     
 int main(int argc, char * argv[])
