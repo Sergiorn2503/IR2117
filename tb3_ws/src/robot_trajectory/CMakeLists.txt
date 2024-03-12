@@ -28,6 +28,10 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
  )
  
+ install(DIRECTORY launch
+   DESTINATION share/${PROJECT_NAME}
+ )
+ 
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
