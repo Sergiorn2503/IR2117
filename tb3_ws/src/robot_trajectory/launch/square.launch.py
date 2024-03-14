@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
-def generete_launch_description():
+def generate_launch_description():
 	return LaunchDescription([
 	  Node(
 	     package="robot_trajectory",
