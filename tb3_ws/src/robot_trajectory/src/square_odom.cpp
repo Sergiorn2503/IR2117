@@ -62,6 +62,12 @@ int main(int argc, char * argv[])
 	    publisher->publish(message);
     }
     
+	while(rclcpp::ok()){
+		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f)", global_x, global_y);
+		rclcpp::spin_some(node);
+		loop_rate.sleep();
+	}
+
 	rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
