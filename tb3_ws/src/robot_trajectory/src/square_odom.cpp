@@ -7,6 +7,7 @@
 using namespace std::chrono_literals;
 
 double global_x; double global_y; double global_angle;
+double initial_x; double initial_y; double initial_angle;
 
 double euler_from_quaternion(geometry_msgs::msg::Quaternion quaternion){
 	double x = quaternion.x;
@@ -20,13 +21,23 @@ double euler_from_quaternion(geometry_msgs::msg::Quaternion quaternion){
 	return yaw;
 }
 
-
+bool aux = true;
 void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
+	
+	if(aux){
+		initial_x = msg->pose.pose.position.x;
+		initial_y = msg->pose.pose.position.y;
+		initial_angle = euler_from_quaternion(msg->pose.pose.orientation);
+
+		aux = false;
+	}
+
 	global_x = msg->pose.pose.position.x;
 	global_y = msg->pose.pose.position.y;
 	global_angle = euler_from_quaternion(msg->pose.pose.orientation);
 
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f,%f)", global_x, global_y,global_angle);
+	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Initial: (%f,%f,%f)", initial_x, initial_y,initial_angle);
 }
 
 int main(int argc, char * argv[])
@@ -78,7 +89,8 @@ int main(int argc, char * argv[])
     }
     
 	while(rclcpp::ok()){
-		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f)", global_x, global_y);
+		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f,%f)", global_x, global_y,global_angle);
+		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Initial: (%f,%f,%f)", initial_x, initial_y,initial_angle);
 		rclcpp::spin_some(node);
 		loop_rate.sleep();
 	}
