@@ -6,12 +6,27 @@
 
 using namespace std::chrono_literals;
 
-double global_x; double global_y; 
+double global_x; double global_y; double global_angle;
+
+double euler_from_quaternion(geometry_msgs::msg::Quaternion quaternion){
+	double x = quaternion.x;
+	double y = quaternion.y;
+	double z = quaternion.z;
+	double w = quaternion.w;
+
+	double siny_cosp = 2*(w*x + y*z);
+	double cosy_cosp = 1 - 2*(x*x + y*y);
+	double yaw = std::atan2(siny_cosp, cosy_cosp);
+	return yaw;
+}
+
 
 void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
 	global_x = msg->pose.pose.position.x;
 	global_y = msg->pose.pose.position.y;
-	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f)", global_x, global_y);
+	global_angle = euler_from_quaternion(msg->pose.pose.orientation);
+
+	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f,%f)", global_x, global_y,global_angle);
 }
 
 int main(int argc, char * argv[])
