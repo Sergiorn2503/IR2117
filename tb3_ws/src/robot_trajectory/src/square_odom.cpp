@@ -11,16 +11,23 @@ double initial_x; double initial_y; double initial_angle;
 double distance; double angular_dif;
 bool stop;
 
+double angle_difference(double initial_angle, double global_angle) {
+    double dtheta = global_angle - initial_angle;
+    if (dtheta > M_PI) {
+        dtheta -= 2 * M_PI;
+    } else if (dtheta < -M_PI) {
+        dtheta += 2 * M_PI;
+    }
+    return dtheta;
+}
 
 double euler_from_quaternion(geometry_msgs::msg::Quaternion quaternion){
-	double x = quaternion.x;
-	double y = quaternion.y;
-	double z = quaternion.z;
-	double w = quaternion.w;
+	double qx = quaternion.x;
+	double qy = quaternion.y;
+	double qz = quaternion.z;
+	double qw = quaternion.w;
 
-	double siny_cosp = 2*(w*z + y*x);
-	double cosy_cosp = 1 - 2*(x*x + y*y);
-	double yaw = std::atan2(siny_cosp, cosy_cosp);
+	double yaw = std::atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz));
 	return yaw;
 }
 
@@ -40,8 +47,8 @@ void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
 	global_angle = euler_from_quaternion(msg->pose.pose.orientation);
 
 	distance = std::sqrt((global_x - initial_x) * (global_x - initial_x) + (global_y - initial_y) * (global_y - initial_y)); 
-	angular_dif = std::abs(global_angle - initial_angle);
-
+	angular_dif = angle_difference(initial_angle, global_angle);
+	
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f,%f)", global_x, global_y,global_angle);
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Initial: (%f,%f,%f)", initial_x, initial_y,initial_angle);
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Distance: (%f)", distance);
@@ -66,10 +73,7 @@ int main(int argc, char * argv[])
     double linear_speed = node->get_parameter("linear_speed").get_parameter_value().get<double>();
     double angular_speed = node->get_parameter("angular_speed").get_parameter_value().get<double>();
     double square_length = node->get_parameter("square_length").get_parameter_value().get<double>();
-    
-    int linear_iterations = square_length / (0.01 * linear_speed);
-    int angular_iterations = M_PI_2 / (0.01 * angular_speed);
-    
+
     for(int s=0; s<4; s++){
 		stop = true;						
 	    
@@ -77,6 +81,7 @@ int main(int argc, char * argv[])
 	    	message.linear.x = linear_speed;
 			publisher->publish(message);
 			rclcpp::spin_some(node);
+			distance = std::sqrt((global_x - initial_x) * (global_x - initial_x) + (global_y - initial_y) * (global_y - initial_y)); 
 			loop_rate.sleep();
 	    }
 	    distance = 0;
@@ -87,12 +92,13 @@ int main(int argc, char * argv[])
 		stop = true;
 	    while (rclcpp::ok() && angular_dif < M_PI_2) {
 	    	message.angular.z = angular_speed;
-			publisher->publish(message);
-			rclcpp::spin_some(node);
-			loop_rate.sleep();
+		publisher->publish(message);
+		rclcpp::spin_some(node);
+		angular_dif = angle_difference(initial_angle, global_angle);
+		loop_rate.sleep();
 	    }
 	    
-		angular_diff = 0;
+		angular_dif = 0;
 	    message.angular.z = 0;
 	    publisher->publish(message);
     }
