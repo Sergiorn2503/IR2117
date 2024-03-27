@@ -8,7 +8,9 @@ using namespace std::chrono_literals;
 
 double global_x; double global_y; double global_angle;
 double initial_x; double initial_y; double initial_angle;
-double distance;
+double distance; double angular_dif;
+bool stop;
+
 
 double euler_from_quaternion(geometry_msgs::msg::Quaternion quaternion){
 	double x = quaternion.x;
@@ -16,21 +18,21 @@ double euler_from_quaternion(geometry_msgs::msg::Quaternion quaternion){
 	double z = quaternion.z;
 	double w = quaternion.w;
 
-	double siny_cosp = 2*(w*x + y*z);
+	double siny_cosp = 2*(w*z + y*x);
 	double cosy_cosp = 1 - 2*(x*x + y*y);
 	double yaw = std::atan2(siny_cosp, cosy_cosp);
 	return yaw;
 }
 
-bool aux = true;
+
 void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
 	
-	if(aux){
+	if(stop){
 		initial_x = msg->pose.pose.position.x;
 		initial_y = msg->pose.pose.position.y;
 		initial_angle = euler_from_quaternion(msg->pose.pose.orientation);
 
-		aux = false;
+		stop = false;
 	}
 
 	global_x = msg->pose.pose.position.x;
@@ -38,10 +40,13 @@ void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg){
 	global_angle = euler_from_quaternion(msg->pose.pose.orientation);
 
 	distance = std::sqrt((global_x - initial_x) * (global_x - initial_x) + (global_y - initial_y) * (global_y - initial_y)); 
+	angular_dif = std::abs(global_angle - initial_angle);
 
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f,%f)", global_x, global_y,global_angle);
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Initial: (%f,%f,%f)", initial_x, initial_y,initial_angle);
 	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Distance: (%f)", distance);
+	RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Angilar Dif: (%f)", angular_dif);
+
 }
 
 int main(int argc, char * argv[])
@@ -66,39 +71,31 @@ int main(int argc, char * argv[])
     int angular_iterations = M_PI_2 / (0.01 * angular_speed);
     
     for(int s=0; s<4; s++){
-    
-	    int i=0;
-	    while (rclcpp::ok() && i<linear_iterations) {
-	    	i++;
-	    	message.linear.x = linear_speed;
-		publisher->publish(message);
-		rclcpp::spin_some(node);
-		loop_rate.sleep();
-	    }
+		stop = true;						
 	    
+	    while (rclcpp::ok() && distance < square_length) {
+	    	message.linear.x = linear_speed;
+			publisher->publish(message);
+			rclcpp::spin_some(node);
+			loop_rate.sleep();
+	    }
+	    distance = 0;
+
 	    message.linear.x = 0;
 	    publisher->publish(message);
 	    
-	    i = 0;
-	    while (rclcpp::ok() && i<angular_iterations) {
-	    	i++;
+		stop = true;
+	    while (rclcpp::ok() && angular_dif < M_PI_2) {
 	    	message.angular.z = angular_speed;
-		publisher->publish(message);
-		rclcpp::spin_some(node);
-		loop_rate.sleep();
+			publisher->publish(message);
+			rclcpp::spin_some(node);
+			loop_rate.sleep();
 	    }
 	    
+		angular_diff = 0;
 	    message.angular.z = 0;
 	    publisher->publish(message);
     }
-    
-	while(rclcpp::ok()){
-		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Position: (%f,%f,%f)", global_x, global_y,global_angle);
-		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Initial: (%f,%f,%f)", initial_x, initial_y,initial_angle);
-		RCLCPP_INFO(rclcpp::get_logger("odom_listener"), "Distance: (%f)", distance);
-		rclcpp::spin_some(node);
-		loop_rate.sleep();
-	}
 
 	rclcpp::spin(node);
     rclcpp::shutdown();
