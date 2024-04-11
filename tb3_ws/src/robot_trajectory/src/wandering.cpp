@@ -1,4 +1,6 @@
 #include <chrono>
+#include <iostream>
+
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
 #include "geometry_msgs/msg/twist.hpp"
@@ -7,7 +9,10 @@ using namespace std::chrono_literals;
 
 void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
-    std::cout << "S";
+    std::cout << "Valor 0:" << msg->ranges[0] << std::endl;
+    std::cout << "Valor 90:" << msg->ranges[90] << std::endl;
+    std::cout << "Valor 180:" << msg->ranges[180] << std::endl;
+    std::cout << "Valor 270:" << msg->ranges[270] << std::endl;
 }
 
 int main(int argc, char * argv[])
