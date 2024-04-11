@@ -7,34 +7,49 @@
 
 using namespace std::chrono_literals;
 
+geometry_msgs::msg::Twist message;
+bool stop = false;
+
+auto Min(const sensor_msgs::msg::LaserScan::SharedPtr msg, int n){
+    int min = n;
+    for(int i= n; i <= n+9; i++){        
+        std::cout << i << "    " << msg->ranges[i] << std::endl;
+        if(msg->ranges[i] < msg->ranges[min]){
+            min = i;
+        }
+    }
+    return msg->ranges[min];
+}
+
 void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
-    int min = 0;
-    for(int i= 1; i <10; i++){        
-        if(msg->ranges[i] < msg->ranges[min]){
-            min = i;
-        }
-    }
-    std::cout << "Valor Mín (0-9)" << msg->ranges[min] << std::endl;
+    auto min_izq = Min(msg, 0);
+    auto min_der = Min(msg, 350);
+    
+    std::cout << min_der << "     " << min_izq << std::endl;
 
-    min = 350;
-    for(int i= 351; i <360; i++){        
-        if(msg->ranges[i] < msg->ranges[min]){
-            min = i;
-        }
+    if(min_der <= 1 || min_izq <= 1){
+        stop = true;
     }
-    std::cout << "Valor Mín" << min << ":" << msg->ranges[min] << std::endl;
 
 }
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
     auto node = rclcpp::Node::make_shared("publisher");
-    auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 0.0);
+    auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
     auto subscription = node->create_subscription<sensor_msgs::msg::LaserScan>("/scan",10, topic_callback);
     rclcpp::WallRate loop_rate(10ms);
 
-    while (rclcpp::ok()) {
+    while (rclcpp::ok()){
+        message.linear.x = 0.7;
+        publisher->publish(message);
+
+        if(stop){
+            message.linear.x = 0.0;
+            publisher->publish(message);
+        }
+
         rclcpp::spin_some(node);
         loop_rate.sleep();
     }
