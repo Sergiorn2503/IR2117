@@ -9,12 +9,21 @@ using namespace std::chrono_literals;
 
 void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
-    for(int i= 0; i <10; i++){
-        std::cout << "Valor" << i << ":" << msg->ranges[i] << std::endl;
+    int min = 0;
+    for(int i= 1; i <10; i++){        
+        if(msg->ranges[i] < msg->ranges[min]){
+            min = i;
+        }
     }
-    for(int i= 350; i <360; i++){
-        std::cout << "Valor" << i << ":" << msg->ranges[i] << std::endl;
+    std::cout << "Valor Mín (0-9)" << msg->ranges[min] << std::endl;
+
+    min = 350;
+    for(int i= 351; i <360; i++){        
+        if(msg->ranges[i] < msg->ranges[min]){
+            min = i;
+        }
     }
+    std::cout << "Valor Mín" << min << ":" << msg->ranges[min] << std::endl;
 
 }
 int main(int argc, char * argv[])
