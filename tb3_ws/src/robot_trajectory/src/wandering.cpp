@@ -9,12 +9,14 @@ using namespace std::chrono_literals;
 
 void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
-    std::cout << "Valor 0:" << msg->ranges[0] << std::endl;
-    std::cout << "Valor 90:" << msg->ranges[90] << std::endl;
-    std::cout << "Valor 180:" << msg->ranges[180] << std::endl;
-    std::cout << "Valor 270:" << msg->ranges[270] << std::endl;
-}
+    for(int i= 0; i <10; i++){
+        std::cout << "Valor" << i << ":" << msg->ranges[i] << std::endl;
+    }
+    for(int i= 350; i <360; i++){
+        std::cout << "Valor" << i << ":" << msg->ranges[i] << std::endl;
+    }
 
+}
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
