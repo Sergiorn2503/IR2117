@@ -26,7 +26,7 @@ void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
     min_izq = Min(msg, 0);
     min_der = Min(msg, 350);
     
-    std::cout << min_der << "     " << min_izq << std::endl;
+    std::cout << "Min der:" << min_der << "     Min izq:" << min_izq << std::endl;
 
     if(min_der <= 1 || min_izq <= 1){
         stop = true;
@@ -49,10 +49,20 @@ int main(int argc, char * argv[])
             message.linear.x = 0.0;
             publisher->publish(message);
 
-            while(min_izq <= 1){
-                message.angular.z = 0.3;
-                publisher->publish(message);
-                rclcpp::spin_some(node);
+            if(min_izq > min_der){
+
+                while(min_izq <= 1){
+                    message.angular.z = 0.3;
+                    publisher->publish(message);
+                    rclcpp::spin_some(node);
+                }
+            }else{
+                
+                while(min_der <= 1){
+                    message.angular.z =-0.3;
+                    publisher->publish(message);
+                    rclcpp::spin_some(node);
+                }
             }
 
             message.angular.z = 0;
