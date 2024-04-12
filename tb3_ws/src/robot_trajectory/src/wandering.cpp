@@ -9,11 +9,11 @@ using namespace std::chrono_literals;
 
 geometry_msgs::msg::Twist message;
 bool stop = false;
+double min_izq; double min_der;
 
 auto Min(const sensor_msgs::msg::LaserScan::SharedPtr msg, int n){
     int min = n;
     for(int i= n; i <= n+9; i++){        
-        std::cout << i << "    " << msg->ranges[i] << std::endl;
         if(msg->ranges[i] < msg->ranges[min]){
             min = i;
         }
@@ -23,8 +23,8 @@ auto Min(const sensor_msgs::msg::LaserScan::SharedPtr msg, int n){
 
 void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
-    auto min_izq = Min(msg, 0);
-    auto min_der = Min(msg, 350);
+    min_izq = Min(msg, 0);
+    min_der = Min(msg, 350);
     
     std::cout << min_der << "     " << min_izq << std::endl;
 
@@ -48,6 +48,17 @@ int main(int argc, char * argv[])
         if(stop){
             message.linear.x = 0.0;
             publisher->publish(message);
+
+            while(min_izq <= 1){
+                message.angular.z = 0.3;
+                publisher->publish(message);
+                rclcpp::spin_some(node);
+            }
+
+            message.angular.z = 0;
+            publisher->publish(message);
+            stop = false;
+            
         }
 
         rclcpp::spin_some(node);
