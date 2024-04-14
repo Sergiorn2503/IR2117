@@ -8,7 +8,7 @@
 using namespace std::chrono_literals;
 
 geometry_msgs::msg::Twist message;
-bool stop = false;
+bool turn_left = false; bool turn_right = false;
 double min_izq; double min_der;
 
 auto Min(const sensor_msgs::msg::LaserScan::SharedPtr msg, int n){
@@ -29,7 +29,13 @@ void topic_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
     std::cout << "Min der:" << min_der << "     Min izq:" << min_izq << std::endl;
 
     if(min_der <= 1 || min_izq <= 1){
-        stop = true;
+
+        if(min_izq > min_der){
+            turn_left = true;
+
+        }else{
+            turn_right = true;
+        }
     }
 
 }
@@ -45,29 +51,34 @@ int main(int argc, char * argv[])
         message.linear.x = 0.7;
         publisher->publish(message);
 
-        if(stop){
+        if(turn_left || turn_right){
             message.linear.x = 0.0;
             publisher->publish(message);
 
-            if(min_izq > min_der){
+            if(turn_left){
 
-                while(min_izq <= 1){
+                while(min_izq <= 1 && min_der <= 1){
                     message.angular.z = 0.3;
                     publisher->publish(message);
                     rclcpp::spin_some(node);
                 }
-            }else{
+
+                turn_left = false;
+
+            }else if(turn_right){
                 
-                while(min_der <= 1){
+                while(min_izq <= 1 && min_der <= 1){
                     message.angular.z =-0.3;
                     publisher->publish(message);
                     rclcpp::spin_some(node);
                 }
+
+                turn_right = false;
+
             }
 
             message.angular.z = 0;
             publisher->publish(message);
-            stop = false;
             
         }
 
