@@ -6,6 +6,7 @@
 #include<cmath>
 
 std::shared_ptr< rclcpp::Publisher<example_interfaces::msg::Bool> > publisher;
+double obs_angle_min; double obs_angle_max; double obs_threshold;
 
 void callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
@@ -15,8 +16,10 @@ void callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
     for(float range: msg->ranges) {
         if(angle > M_PI) angle -= 2*M_PI;
         if((angle >= obs_angle_min) and (angle <= obs_angle_max)) {
-            if(range <= obs_threshold)
+            if(range <= obs_threshold){
                 out_msg.data = true;
+                break;
+            }
         }
         angle += msg->angle_increment;
     }
@@ -26,7 +29,7 @@ void callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("dtector");
+    auto node = rclcpp::Node::make_shared("detector");
     auto subscription =
         node->create_subscription<sensor_msgs::msg::LaserScan>("scan", 10, callback);
     publisher = node->create_publisher<example_interfaces::msg::Bool>("obstacle", 10);
