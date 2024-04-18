@@ -11,8 +11,18 @@ void callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
     example_interfaces::msg::Bool out_msg;
     out_msg.data = false;
+    float angle = msg->angle_min;
+    for(float range: msg->ranges) {
+        if(angle > M_PI) angle -= 2*M_PI;
+        if((angle >= obs_angle_min) and (angle <= obs_angle_max)) {
+            if(range <= obs_threshold)
+                out_msg.data = true;
+        }
+        angle += msg->angle_increment;
+    }
     publisher->publish(out_msg);
 }
+
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
