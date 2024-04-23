@@ -1,22 +1,25 @@
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/laser_scan.hpp"
-#include <iostream>
-#include "geometry_msgs/msg/twist.hpp"
-#include "example_interfaces/msg/bool.hpp"
+#include "geometry_msgs/msg/twist.hpp
 
-#include<cmath>
+#include <chrono>
 
+using namespace std::chrono_literals;
 
-
-void callback(const example_interfaces::msg::Bool::SharedPtr msg)
-{
-}
 
 int main(int argc, char * argv[])
 {
-    /*
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("avoidance");
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
-    auto subscription1 =
-        node->create_subscription<sensor_msgs::msg::LaserScan>("/front/obstacle", 10, callback);
-    */
+    geometry_msgs::msg::Twist message;
+    rclcpp::WallRate loop_rate(50ms);
+
+    while(rclcpp::ok()){
+        publisher->publish(message);
+        rclcpp::spin_some(node);
+        loop_rate.sleep();
+    }
+
+    rclcpp::shutdown();
+    return 0;
 }
