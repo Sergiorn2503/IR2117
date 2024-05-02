@@ -5,6 +5,7 @@
 
 using namespace std::chrono_literals;
 
+
 int main(int argc, char * argv[])
 {
  rclcpp::init(argc, argv);
@@ -15,9 +16,11 @@ int main(int argc, char * argv[])
  auto publish_count = 0;
  rclcpp::WallRate loop_rate(500ms);
 
+  double radius = node->get_parameter("radius").get_parameter_value().get<double>();
+
  while (rclcpp::ok()) {
    message.linear.x = 1.0;
-   message.angular.z = 0.7;
+   message.angular.z = 1.0 / radius;
    publisher->publish(message);
    rclcpp::spin_some(node);
    loop_rate.sleep();
