@@ -14,6 +14,7 @@ void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
     std_msgs::msg::Int32 out_msg;
     out_msg.data = min;        //Publicamos
     publisher -> publish(out_msg);
+}
     
 int main(int argc, char * argv[])
 {

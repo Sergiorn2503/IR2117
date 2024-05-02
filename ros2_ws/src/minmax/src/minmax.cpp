@@ -24,6 +24,7 @@ void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
     out_msg.data.push_back(max);
     
     publisher -> publish(out_msg);
+}
     
 int main(int argc, char * argv[])
 {
@@ -36,3 +37,4 @@ int main(int argc, char * argv[])
     rclcpp::shutdown();
     return 0;
 }
+
