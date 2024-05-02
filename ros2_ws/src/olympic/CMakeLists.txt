@@ -19,6 +19,16 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(example_interfaces REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
+add_executable(rings src/rings.cpp)
+ament_target_dependencies(rings
+  rclcpp example_interfaces geometry_msgs)
+
+install(TARGETS
+  rings
+  DESTINATION lib/${PROJECT_NAME})
+  
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
