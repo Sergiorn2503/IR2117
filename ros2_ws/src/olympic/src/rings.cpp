@@ -11,8 +11,7 @@ using namespace std::chrono_literals;
 using  turtlesim::srv::SetPen;
 using  turtlesim::srv::TeleportAbsolute;
 
-std::vector<std::vector<float>> colors = {{0.0,0.0,255.0},{0.0,0.0,0.0},{255.0,0.0,0.0},{255.0,255.0,0.0},{0.0,255.0,0.0}}; //b,negro,r,y,g
-std::vector<std::vector<float>> positions = {{3.5,5.5},{5.5,5.5},{8.0,5.5},{4.25,4.5},{6.75,4.5}}; //mismo orden colores
+std::vector<std::vector<double>> colors = {{0.0,0.0,255.0},{0.0,0.0,0.0},{255.0,0.0,0.0},{255.0,255.0,0.0},{0.0,255.0,0.0}}; //b,negro,r,y,g
 bool stop = false;
 
 int main(int argc, char * argv[])
@@ -21,16 +20,17 @@ int main(int argc, char * argv[])
     auto node = rclcpp::Node::make_shared("rings");
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("/turtle1/cmd_vel", 10);
     node->declare_parameter("radius",1.0);
+    double radius = node->get_parameter("radius").get_parameter_value().get<double>();
+    std::vector<std::vector<double>> positions = 
+        {{3.0*radius,5.5*radius},{5.5*radius,5.5*radius},{8.0*radius,5.5*radius},{4.25*radius,4.5*radius},{6.75*radius,4.5*radius}};
     geometry_msgs::msg::Twist message;
     rclcpp::WallRate loop_rate(500ms);
-
-    double radius = node->get_parameter("radius").get_parameter_value().get<double>();
 
     rclcpp::Client<SetPen>::SharedPtr client_pen =
             node->create_client<SetPen>("/turtle1/set_pen");
         auto request_setpen =
             std::make_shared<SetPen::Request>();
-        request_setpen-> width = 3.7;
+        request_setpen-> width = 7.0;
         request_setpen-> off = 1.0;
 
         while (!client_pen->wait_for_service(1s)) {
@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
         // Espera a que la llamada al servicio se complete.
         rclcpp::spin_until_future_complete(node, result_teleport);
 
-    int angular_iterations = 2* M_PI / (0.01 * (1.0/radius));
+    int angular_iterations = 4 * M_PI / (1.0/radius);
 
     while (rclcpp::ok() && !stop) {
         for(int i=0; i < 5; i++){
@@ -80,9 +80,10 @@ int main(int argc, char * argv[])
             request_setpen-> b = colors[i][2];
             request_setpen-> off = 0.0;
             result_pen = client_pen->async_send_request(request_setpen);
+
             for(int v=0; v <= angular_iterations; v++){
                 message.linear.x = 1.0;
-                message.angular.z = 1.0 / radius;
+                message.angular.z = 1.0/radius;
                 publisher->publish(message);
                 rclcpp::spin_some(node);
                 loop_rate.sleep();
