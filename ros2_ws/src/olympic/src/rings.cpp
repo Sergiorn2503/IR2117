@@ -13,6 +13,7 @@ using  turtlesim::srv::TeleportAbsolute;
 
 std::vector<std::vector<float>> colors = {{0.0,0.0,255.0},{0.0,0.0,0.0},{255.0,0.0,0.0},{255.0,255.0,0.0},{0.0,255.0,0.0}}; //b,negro,r,y,g
 std::vector<std::vector<float>> positions = {{3.5,5.5},{5.5,5.5},{8.0,5.5},{4.25,4.5},{6.75,4.5}}; //mismo orden colores
+bool stop = false;
 
 int main(int argc, char * argv[])
 {
@@ -29,6 +30,7 @@ int main(int argc, char * argv[])
             node->create_client<SetPen>("/turtle1/set_pen");
         auto request_setpen =
             std::make_shared<SetPen::Request>();
+        request_setpen-> width = 3.7;
         request_setpen-> off = 1.0;
 
         while (!client_pen->wait_for_service(1s)) {
@@ -69,20 +71,34 @@ int main(int argc, char * argv[])
         // Espera a que la llamada al servicio se complete.
         rclcpp::spin_until_future_complete(node, result_teleport);
 
-    while (rclcpp::ok()) {
-        request_setpen-> r = colors[0][0];
-        request_setpen-> g = colors[0][1];
-        request_setpen-> b = colors[0][2];
-        request_setpen-> width = 3.7;
-        request_setpen-> off = 0.0;
-        result_pen = client_pen->async_send_request(request_setpen);
+    int angular_iterations = 2* M_PI / (0.01 * (1.0/radius));
 
-        message.linear.x = 1.0;
-        message.angular.z = 1.0 / radius;
-        publisher->publish(message);
-        rclcpp::spin_some(node);
-        loop_rate.sleep();
-        //rclcpp::sleep_for(5000ms);
+    while (rclcpp::ok() && !stop) {
+        for(int i=0; i < 5; i++){
+            request_setpen-> r = colors[i][0];
+            request_setpen-> g = colors[i][1];
+            request_setpen-> b = colors[i][2];
+            request_setpen-> off = 0.0;
+            result_pen = client_pen->async_send_request(request_setpen);
+            for(int v=0; v <= angular_iterations; v++){
+                message.linear.x = 1.0;
+                message.angular.z = 1.0 / radius;
+                publisher->publish(message);
+                rclcpp::spin_some(node);
+                loop_rate.sleep();
+            }
+            
+            request_setpen-> off = 1.0;
+            result_pen = client_pen->async_send_request(request_setpen);
+
+            if(i+1 != 5){
+                request_teleport-> x = positions[i+1][0];
+                request_teleport-> y = positions[i+1][1];
+                request_teleport-> theta = 0.0;
+                result_teleport = client_teleport->async_send_request(request_teleport);
+            }
+        }
+        stop = true;
     }
 
     rclcpp::shutdown();
