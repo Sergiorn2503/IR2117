@@ -7,18 +7,18 @@
   <maintainer email="al428707@uji.es">Sergio</maintainer>
   <license>Apache License 2.0</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend> <!Primero instalar Cmake>
 
-  <depend>rclcpp</depend>
+  <depend>rclcpp</depend> <!instalar dependencias>
   <depend>example_interfaces</depend>
   <depend>turtlesim</depend>
   <depend>rosidl_typesupport_cpp</depend>
 
 
-  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_auto</test_depend> <!Paquetes para pruebas>
   <test_depend>ament_lint_common</test_depend>
 
-  <export>
-    <build_type>ament_cmake</build_type>
+  <export> <!Info adicional>
+    <build_type>ament_cmake</build_type> <!Sist Compilacion>
   </export>
 </package>

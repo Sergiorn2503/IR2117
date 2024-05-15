@@ -13,7 +13,7 @@ int state;
 
 void callback_front(const example_interfaces::msg::Bool::SharedPtr msg)
 {
-    obj_front = msg->data;
+    obj_front = msg->data;  //Obtiene valor
 }
 
 void callback_right(const example_interfaces::msg::Bool::SharedPtr msg)
@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
     auto node = rclcpp::Node::make_shared("avoidance");
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 10);
     auto sub_front =
-        node->create_subscription<example_interfaces::msg::Bool>("/front/obstacle", 10, callback_front);
+        node->create_subscription<example_interfaces::msg::Bool>("/front/obstacle", 10, callback_front); //subscripción a cada nodo
     auto sub_right =
         node->create_subscription<example_interfaces::msg::Bool>("/right/obstacle", 10, callback_right);
     auto sub_left =
@@ -46,8 +46,8 @@ int main(int argc, char * argv[])
     double n;
     state = 1;
     while(rclcpp::ok()){
-        switch (state){
-            case 1:
+        switch (state){   //Para estados
+            case 1:  //Definimos cada estado
                 message.linear.x = 0.5;
                 publisher->publish(message);
 
@@ -56,16 +56,16 @@ int main(int argc, char * argv[])
                     publisher->publish(message);
 
                     if(obj_right){
-                        state = 4;
+                        state = 4; //Según estado
                     }else if(obj_left){
                         state = 3;
                     }else{
                         state = 2;
                     }
                 }
-                rclcpp::spin_some(node);
+                rclcpp::spin_some(node); //QUe chufe
 
-                break;
+                break;  //Obligatorio, corta estado
             
             case 2:
                 n = static_cast<double>(rand()) / RAND_MAX;
@@ -107,6 +107,6 @@ int main(int argc, char * argv[])
 
     }
 
-    rclcpp::shutdown();
+    rclcpp::shutdown(); 
     return 0;
 }

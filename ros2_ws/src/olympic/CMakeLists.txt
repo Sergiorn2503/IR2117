@@ -16,17 +16,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
+find_package(ament_cmake REQUIRED) #Paquetes necasrios
 find_package(rclcpp REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(turtlesim REQUIRED)
 
-add_executable(rings src/rings.cpp)
+add_executable(rings src/rings.cpp)  #Creamos ejecutable
 ament_target_dependencies(rings
   rclcpp example_interfaces geometry_msgs turtlesim)
 
-install(TARGETS
+install(TARGETS  #Para la comp
   rings
   DESTINATION lib/${PROJECT_NAME})
   

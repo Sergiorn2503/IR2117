@@ -10,11 +10,11 @@ std::shared_ptr< rclcpp::Publisher<std_msgs::msg::Int32> > publisher;
 
 void topic_callback(const std_msgs::msg::Int32::SharedPtr msg)
 {
-    sum += msg->data;
+    sum += msg->data; //Cogemos dato 
     mean = sum / mensajes;
     
-    std_msgs::msg::Int32 out_msg;
-    out_msg.data = mean;
+    std_msgs::msg::Int32 out_msg; // tipo msg salida
+    out_msg.data = mean; //damos valor
     publisher -> publish(out_msg);
     mensajes += 1;
 }
@@ -23,7 +23,7 @@ int main(int argc, char * argv[])
 {
     sum = 0;
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("mean");
+    auto node = rclcpp::Node::make_shared("mean"); //Crea Nodo
     auto subscription = 
     	node->create_subscription<std_msgs::msg::Int32>("number", 10, topic_callback);
     

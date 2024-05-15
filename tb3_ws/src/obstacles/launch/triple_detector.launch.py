@@ -7,7 +7,7 @@ def generate_launch_description():
         Node(
             package= "obstacles",
             executable="detector",
-            namespace= "front",
+            namespace= "front",  #dividimos en espacios
             parameters=[
                 {"obs_angle_min": -0.3927},
                 {"obs_angle_max": 0.3927},

@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
     auto node = rclcpp::Node::make_shared("detector");
     auto subscription =
         node->create_subscription<sensor_msgs::msg::LaserScan>("/scan", 10, callback);
-    publisher = node->create_publisher<example_interfaces::msg::Bool>("obstacle", 10);
+    publisher = node->create_publisher<example_interfaces::msg::Bool>("obstacle", 10); //Sin / inicial para dividirlo
     node->declare_parameter("obs_angle_min", -M_PI/8);
     node->declare_parameter("obs_angle_max", M_PI/8);
     node->declare_parameter("obs_threshold", 1.0);

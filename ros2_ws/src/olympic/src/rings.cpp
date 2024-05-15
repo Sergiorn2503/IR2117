@@ -17,23 +17,23 @@ bool stop = false;
 int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("rings");
+    auto node = rclcpp::Node::make_shared("rings"); //Crea Nodo
     auto publisher = node->create_publisher<geometry_msgs::msg::Twist>("/turtle1/cmd_vel", 10);
-    node->declare_parameter("radius",1.0);
-    double radius = node->get_parameter("radius").get_parameter_value().get<double>();
+    node->declare_parameter("radius",1.0); //Declaramos parametro 1.0 defecto
+    double radius = node->get_parameter("radius").get_parameter_value().get<double>(); //cogemos valor parametro
     std::vector<std::vector<double>> positions = 
         {{3.0*radius,5.5*radius},{5.5*radius,5.5*radius},{8.0*radius,5.5*radius},{4.25*radius,4.5*radius},{6.75*radius,4.5*radius}};
-    geometry_msgs::msg::Twist message;
+    geometry_msgs::msg::Twist message; //Tipo mensaje
     rclcpp::WallRate loop_rate(500ms);
 
-    rclcpp::Client<SetPen>::SharedPtr client_pen =
+    rclcpp::Client<SetPen>::SharedPtr client_pen =   //Crea el cliente Pen
             node->create_client<SetPen>("/turtle1/set_pen");
-        auto request_setpen =
+        auto request_setpen =    //Crea el Request Pen
             std::make_shared<SetPen::Request>();
         request_setpen-> width = 7.0;
         request_setpen-> off = 1.0;
 
-        while (!client_pen->wait_for_service(1s)) {
+        while (!client_pen->wait_for_service(1s)) {   //Espera respuesta
             if (!rclcpp::ok()) {
                 RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), 
                     "Interrupted while waiting for the service.");
@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
             "service not available, waiting again...");
         }
 
-        auto result_pen = client_pen->async_send_request(request_setpen);
+        auto result_pen = client_pen->async_send_request(request_setpen); //Envia resultado
 
         // Espera a que la llamada al servicio se complete.
         rclcpp::spin_until_future_complete(node, result_pen);
@@ -75,11 +75,11 @@ int main(int argc, char * argv[])
 
     while (rclcpp::ok() && !stop) {
         for(int i=0; i < 5; i++){
-            request_setpen-> r = colors[i][0];
+            request_setpen-> r = colors[i][0]; // da valores a los requirimientos
             request_setpen-> g = colors[i][1];
             request_setpen-> b = colors[i][2];
             request_setpen-> off = 0.0;
-            result_pen = client_pen->async_send_request(request_setpen);
+            result_pen = client_pen->async_send_request(request_setpen);  //Llama al servicio
 
             for(int v=0; v <= angular_iterations; v++){
                 message.linear.x = 1.0;
@@ -89,7 +89,7 @@ int main(int argc, char * argv[])
                 loop_rate.sleep();
             }
             
-            request_setpen-> off = 1.0;
+            request_setpen-> off = 1.0;  //Sino se modifican se quedan los valores anteriores
             result_pen = client_pen->async_send_request(request_setpen);
 
             if(i+1 != 5){
