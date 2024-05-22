@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(robot_trajectory)
+project(intrusion)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -18,39 +18,26 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(example_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
 
 
-add_executable(square src/square.cpp)
-ament_target_dependencies(square rclcpp geometry_msgs)
+add_executable(detector src/detector.cpp)
+ament_target_dependencies(detector rclcpp sensor_msgs example_interfaces)
 
-add_executable(spiral src/spiral.cpp)
-ament_target_dependencies(spiral rclcpp geometry_msgs)
+add_executable(monitor src/monitor.cpp)
+ament_target_dependencies(monitor rclcpp sensor_msgs example_interfaces geometry_msgs nav_msgs)
 
-add_executable(square_odom src/square_odom.cpp)
-ament_target_dependencies(square_odom rclcpp nav_msgs)
-
-add_executable(wandering src/wandering.cpp)
-ament_target_dependencies(wandering rclcpp sensor_msgs)
-
-add_executable(polygon src/polygon.cpp)
-ament_target_dependencies(polygon rclcpp geometry_msgs)
-
-install(TARGETS
-  square
-  square_odom
-  wandering
-  polygon
-  spiral
+install( TARGETS 
+  detector
+  monitor
   DESTINATION lib/${PROJECT_NAME}
- )
- 
- install(DIRECTORY launch
-   DESTINATION share/${PROJECT_NAME}
- )
- 
+)
+
+install(DIRECTORY launch  #del launch
+  DESTINATION share/${PROJECT_NAME})
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)

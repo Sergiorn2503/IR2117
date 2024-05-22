@@ -16,7 +16,7 @@ void callback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
     for(float range: msg->ranges) {
         if(angle > M_PI) angle -= 2*M_PI;
         if((angle >= person_angle_min) and (angle <= person_angle_max)) {
-            if( range >= person_distance_min) && (range <= person_distance_max){
+            if((range >= person_distance_min) && (range <= person_distance_max)){
                 out_msg.data = true;
                 break;
             }
